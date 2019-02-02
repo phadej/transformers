@@ -1,5 +1,8 @@
 -*-change-log-*-
 
+0.5.6.1 Ross Paterson <R.Paterson@city.ac.uk> Feb 2019
+	* Backward compatability fix for MonadFix ListT instance
+
 0.5.6.0 Ross Paterson <R.Paterson@city.ac.uk> Feb 2019
 	* Generalized type of except
 	* Added Control.Monad.Trans.Writer.CPS and Control.Monad.Trans.RWS.CPS
