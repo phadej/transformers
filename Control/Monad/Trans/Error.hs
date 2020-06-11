@@ -2,7 +2,7 @@
 #if __GLASGOW_HASKELL__ >= 702
 {-# LANGUAGE Safe #-}
 #endif
-#if __GLASGOW_HASKELL__ >= 710
+#if __GLASGOW_HASKELL__ >= 710 && __GLASGOW_HASKELL__ < 802
 {-# LANGUAGE AutoDeriveTypeable #-}
 #endif
 #if !(MIN_VERSION_base(4,9,0))
