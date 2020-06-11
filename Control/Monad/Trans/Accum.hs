@@ -71,6 +71,10 @@ import Control.Monad.Signatures
 import Data.Monoid
 #endif
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- ---------------------------------------------------------------------------
 -- | An accumulation monad parameterized by the type @w@ of output to accumulate.
 --
@@ -222,6 +226,12 @@ instance (Monoid w) => MonadTrans (AccumT w) where
 instance (Monoid w, Functor m, MonadIO m) => MonadIO (AccumT w m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Monoid w, Quote m) => Quote (AccumT w m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 -- | @'look'@ is an action that fetches all the previously accumulated output.
 look :: (Monoid w, Monad m) => AccumT w m w

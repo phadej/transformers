@@ -57,6 +57,10 @@ import Control.Applicative
 import qualified Control.Monad.Fail as Fail
 #endif
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 {- |
 Continuation monad.
 @Cont r a@ is a CPS ("continuation-passing style") computation that produces an
@@ -194,6 +198,12 @@ instance MonadTrans (ContT r) where
 instance (MonadIO m) => MonadIO (ContT r m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (ContT r m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 -- | @callCC@ (call-with-current-continuation) calls its argument
 -- function, passing it the current continuation.  It provides

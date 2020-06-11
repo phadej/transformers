@@ -76,6 +76,10 @@ import qualified Control.Monad.Fail as Fail
 import Control.Monad.Fix
 import Data.Monoid
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | A monad containing an environment of type @r@, output of type @w@
 -- and an updatable state of type @s@.
 type RWS r w s = RWST r w s Identity
@@ -235,6 +239,12 @@ instance (Monoid w) => MonadTrans (RWST r w s) where
 instance (Monoid w, MonadIO m) => MonadIO (RWST r w s m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Monoid w, Quote m) => Quote (RWST r w s m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,12,0)
 instance Contravariant m => Contravariant (RWST r w s m) where

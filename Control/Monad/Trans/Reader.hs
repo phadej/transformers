@@ -67,6 +67,10 @@ import Control.Monad.Zip (MonadZip(mzipWith))
 import Data.Functor(Functor(..))
 #endif
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | The parameterizable reader monad.
 --
 -- Computations are functions of a shared environment.
@@ -205,6 +209,12 @@ instance MonadTrans (ReaderT r) where
 instance (MonadIO m) => MonadIO (ReaderT r m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (ReaderT r m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,4,0)
 instance (MonadZip m) => MonadZip (ReaderT r m) where

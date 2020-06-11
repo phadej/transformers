@@ -72,6 +72,10 @@ import Data.Monoid
 import Data.Traversable (Traversable(traverse))
 import Prelude hiding (null, length)
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- ---------------------------------------------------------------------------
 -- | A writer monad parameterized by the type @w@ of output to accumulate.
 --
@@ -234,6 +238,12 @@ instance (Monoid w) => MonadTrans (WriterT w) where
 instance (Monoid w, MonadIO m) => MonadIO (WriterT w m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Monoid w, Quote m) => Quote (WriterT w m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,4,0)
 instance (Monoid w, MonadZip m) => MonadZip (WriterT w m) where

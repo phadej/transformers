@@ -62,6 +62,10 @@ import Data.Foldable (Foldable(foldMap))
 import Data.Maybe (fromMaybe)
 import Data.Traversable (Traversable(traverse))
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | The parameterizable maybe monad, obtained by composing an arbitrary
 -- monad with the 'Maybe' monad.
 --
@@ -200,6 +204,12 @@ instance MonadTrans MaybeT where
 instance (MonadIO m) => MonadIO (MaybeT m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (MaybeT m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,4,0)
 instance (MonadZip m) => MonadZip (MaybeT m) where

@@ -69,6 +69,10 @@ import Data.Foldable (Foldable(foldMap))
 import Data.Monoid
 import Data.Traversable (Traversable(traverse))
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | The parameterizable exception monad.
 --
 -- Computations are either exceptions or normal values.
@@ -253,6 +257,12 @@ instance MonadTrans (ExceptT e) where
 instance (MonadIO m) => MonadIO (ExceptT e m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (ExceptT e m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,4,0)
 instance (MonadZip m) => MonadZip (ExceptT e m) where

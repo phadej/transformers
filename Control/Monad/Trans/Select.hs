@@ -55,6 +55,10 @@ import qualified Control.Monad.Fail as Fail
 #endif
 import Data.Functor.Identity
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | Selection monad.
 type Select r = SelectT r Identity
 
@@ -149,6 +153,12 @@ instance MonadTrans (SelectT r) where
 instance (MonadIO m) => MonadIO (SelectT r m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (SelectT r m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 -- | Convert a selection computation to a continuation-passing computation.
 selectToContT :: (Monad m) => SelectT r m a -> ContT r m a

@@ -63,6 +63,8 @@ library
   if impl(ghc>=7.2 && <7.5)
     -- Prior to GHC 7.5, GHC.Generics lived in ghc-prim
     build-depends: ghc-prim
+  if impl(ghc >=8.11)
+    build-depends: template-haskell >=2.17
   exposed-modules:
     Control.Applicative.Backwards
     Control.Applicative.Lift

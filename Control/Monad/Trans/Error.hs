@@ -77,6 +77,10 @@ import Data.Monoid (mempty)
 import Data.Traversable (Traversable(traverse))
 import System.IO.Error
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 #if !(MIN_VERSION_base(4,9,0))
 -- These instances are in base-4.9.0
 
@@ -267,6 +271,12 @@ instance MonadTrans (ErrorT e) where
 
 instance (Error e, MonadIO m) => MonadIO (ErrorT e m) where
     liftIO = lift . liftIO
+
+#ifdef MIN_VERSION_template_haskell
+instance (Error e, Quote m) => Quote (ErrorT e m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,12,0)
 instance Contravariant m => Contravariant (ErrorT e m) where

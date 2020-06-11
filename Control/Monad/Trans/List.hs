@@ -50,6 +50,10 @@ import Control.Monad.Zip (MonadZip(mzipWith))
 import Data.Foldable (Foldable(foldMap))
 import Data.Traversable (Traversable(traverse))
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | Parameterizable list monad, with an inner monad.
 --
 -- /Note:/ this does not yield a monad unless the argument monad is commutative.
@@ -158,6 +162,12 @@ instance MonadTrans ListT where
 instance (MonadIO m) => MonadIO (ListT m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (ListT m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,4,0)
 instance (MonadZip m) => MonadZip (ListT m) where

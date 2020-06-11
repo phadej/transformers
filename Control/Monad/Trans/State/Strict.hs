@@ -85,6 +85,10 @@ import qualified Control.Monad.Fail as Fail
 #endif
 import Control.Monad.Fix
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- ---------------------------------------------------------------------------
 -- | A state monad parameterized by the type @s@ of the state to carry.
 --
@@ -254,6 +258,12 @@ instance MonadTrans (StateT s) where
 instance (MonadIO m) => MonadIO (StateT s m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (StateT s m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,12,0)
 instance Contravariant m => Contravariant (StateT s m) where

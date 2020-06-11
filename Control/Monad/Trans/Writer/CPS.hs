@@ -69,6 +69,10 @@ import Data.Monoid
 import qualified Control.Monad.Fail as Fail
 #endif
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- ---------------------------------------------------------------------------
 -- | A writer monad parameterized by the type @w@ of output to accumulate.
 --
@@ -213,6 +217,12 @@ instance MonadTrans (WriterT w) where
 instance (MonadIO m) => MonadIO (WriterT w m) where
     liftIO = lift . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Monoid w, Quote m) => Quote (WriterT w m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 -- | @'tell' w@ is an action that produces the output @w@.
 tell :: (Monoid w, Monad m) => w -> WriterT w m ()

@@ -53,6 +53,10 @@ import Data.Foldable
 import Data.Traversable (Traversable(traverse))
 import Prelude hiding (foldr, foldr1, foldl, foldl1, null, length)
 
+#ifdef MIN_VERSION_template_haskell
+import Language.Haskell.TH (Quote (..))
+#endif
+
 -- | The trivial monad transformer, which maps a monad to an equivalent monad.
 newtype IdentityT f a = IdentityT { runIdentityT :: f a }
 
@@ -148,6 +152,12 @@ instance (MonadFix m) => MonadFix (IdentityT m) where
 instance (MonadIO m) => MonadIO (IdentityT m) where
     liftIO = IdentityT . liftIO
     {-# INLINE liftIO #-}
+
+#ifdef MIN_VERSION_template_haskell
+instance (Quote m) => Quote (IdentityT m) where
+    newName = lift . newName
+    {-# INLINE newName #-}
+#endif
 
 #if MIN_VERSION_base(4,4,0)
 instance (MonadZip m) => MonadZip (IdentityT m) where
